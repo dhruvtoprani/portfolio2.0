@@ -1,7 +1,5 @@
-import * as THREE from 'three';
 import { motion } from 'framer-motion';
 import { ArrowUpRight, Mail, Linkedin, Github, Layers } from 'lucide-react';
-import { useEffect, useRef } from 'react';
 
 const metrics = [
   ['35%', 'onboarding drop-off reduction'],
@@ -41,89 +39,16 @@ const leadership = [
 
 const fade = { hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } } };
 
-function ThreeField() {
-  const mountRef = useRef(null);
-
-  useEffect(() => {
-    const mount = mountRef.current;
-    if (!mount) return undefined;
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-    camera.position.z = 6;
-
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    mount.appendChild(renderer.domElement);
-
-    const group = new THREE.Group();
-    scene.add(group);
-
-    const material = new THREE.LineBasicMaterial({ color: 0xc8a96a, transparent: true, opacity: 0.2 });
-    const dotMaterial = new THREE.PointsMaterial({ color: 0xf4f1ea, size: 0.018, transparent: true, opacity: 0.55 });
-    const vertices = [];
-    const dots = [];
-
-    for (let y = 0; y < 8; y += 1) {
-      for (let x = 0; x < 12; x += 1) {
-        const p = new THREE.Vector3((x - 5.5) * 0.48, (y - 3.5) * 0.42, Math.sin(x * 0.8 + y) * 0.22);
-        dots.push(p.x, p.y, p.z);
-        if (x < 11) {
-          const q = new THREE.Vector3((x + 1 - 5.5) * 0.48, (y - 3.5) * 0.42, Math.sin((x + 1) * 0.8 + y) * 0.22);
-          vertices.push(p.x, p.y, p.z, q.x, q.y, q.z);
-        }
-        if (y < 7) {
-          const q = new THREE.Vector3((x - 5.5) * 0.48, (y + 1 - 3.5) * 0.42, Math.sin(x * 0.8 + y + 1) * 0.22);
-          vertices.push(p.x, p.y, p.z, q.x, q.y, q.z);
-        }
-      }
-    }
-
-    const lineGeometry = new THREE.BufferGeometry();
-    lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-    const mesh = new THREE.LineSegments(lineGeometry, material);
-    group.add(mesh);
-
-    const pointGeometry = new THREE.BufferGeometry();
-    pointGeometry.setAttribute('position', new THREE.Float32BufferAttribute(dots, 3));
-    const points = new THREE.Points(pointGeometry, dotMaterial);
-    group.add(points);
-
-    const resize = () => {
-      const width = mount.clientWidth || 800;
-      const height = mount.clientHeight || 600;
-      renderer.setSize(width, height);
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-    };
-
-    resize();
-    window.addEventListener('resize', resize);
-
-    let frame;
-    const animate = () => {
-      const t = performance.now() * 0.001;
-      group.rotation.x = -0.36 + Math.sin(t * 0.2) * 0.04;
-      group.rotation.y = -0.54 + Math.cos(t * 0.16) * 0.06;
-      group.rotation.z = Math.sin(t * 0.12) * 0.02;
-      renderer.render(scene, camera);
-      frame = requestAnimationFrame(animate);
-    };
-    animate();
-
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener('resize', resize);
-      lineGeometry.dispose();
-      pointGeometry.dispose();
-      material.dispose();
-      dotMaterial.dispose();
-      renderer.dispose();
-      if (renderer.domElement.parentNode === mount) mount.removeChild(renderer.domElement);
-    };
-  }, []);
-
-  return <div ref={mountRef} className="three-field" aria-hidden="true" />;
+function PremiumField() {
+  return (
+    <div className="premium-field" aria-hidden="true">
+      {Array.from({ length: 9 }).map((_, row) => (
+        <div className="field-row" key={row}>
+          {Array.from({ length: 13 }).map((__, col) => <span key={`${row}-${col}`} />)}
+        </div>
+      ))}
+    </div>
+  );
 }
 
 function Section({ eyebrow, title, copy, children, id }) {
@@ -135,7 +60,7 @@ function Nav() {
 }
 
 function Hero() {
-  return <header className="hero" id="top"><div className="hero-bg"><ThreeField /></div><motion.div className="hero-copy" variants={fade} initial="hidden" animate="show"><div className="status"><span /> Available for Fall 2026 PM and TPM conversations</div><h1>Product-minded engineer building at the edge of AI, robotics, and human-centered systems.</h1><p>I translate ambiguity into shipped systems, measurable workflows, and product decisions across AI, robotics, energy, accessibility, and technical program execution.</p><div className="actions"><a className="primary" href="#work">View Work <ArrowUpRight size={18} /></a><a className="secondary" href="https://www.linkedin.com/in/dhruvtoprani/" target="_blank" rel="noreferrer">LinkedIn <Linkedin size={17} /></a></div></motion.div><motion.div className="portrait" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.15 }}><div className="portrait-inner"><span>DT</span></div><div className="portrait-caption"><b>Dhruv Kekin Toprani</b><small>Computer Engineering, Honors College, Michigan State University</small></div></motion.div></header>;
+  return <header className="hero" id="top"><div className="hero-bg"><PremiumField /></div><motion.div className="hero-copy" variants={fade} initial="hidden" animate="show"><div className="status"><span /> Available for Fall 2026 PM and TPM conversations</div><h1>Product-minded engineer building at the edge of AI, robotics, and human-centered systems.</h1><p>I translate ambiguity into shipped systems, measurable workflows, and product decisions across AI, robotics, energy, accessibility, and technical program execution.</p><div className="actions"><a className="primary" href="#work">View Work <ArrowUpRight size={18} /></a><a className="secondary" href="https://www.linkedin.com/in/dhruvtoprani/" target="_blank" rel="noreferrer">LinkedIn <Linkedin size={17} /></a></div></motion.div><motion.div className="portrait" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.15 }}><div className="portrait-inner"><span>DT</span></div><div className="portrait-caption"><b>Dhruv Kekin Toprani</b><small>Computer Engineering, Honors College, Michigan State University</small></div></motion.div></header>;
 }
 
 function Metrics() {
